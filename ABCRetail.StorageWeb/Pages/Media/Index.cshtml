@@ -1,0 +1,79 @@
+@page
+@model ABCRetail.StorageWeb.Pages.Media.IndexModel
+@{
+    ViewData["Title"] = "Media Library";
+}
+
+<h1 class="display-6">Media Library</h1>
+<p class="text-muted">Upload product imagery and marketing content to the <code>mediacontent</code> blob container.</p>
+
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <div class="alert alert-success" role="alert">@Model.StatusMessage</div>
+}
+
+<section class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">
+        <strong>Upload Media</strong>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-8">
+                    <input asp-for="Upload" type="file" class="form-control" />
+                    <span asp-validation-for="Upload" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-secondary w-100">Upload to Blob Storage</button>
+                </div>
+            </div>
+            <div asp-validation-summary="All" class="alert alert-danger mt-3" role="alert"></div>
+            <p class="small text-muted mt-2">Files are stored under container <code>mediacontent</code> in storage account <code>st10445399</code>.</p>
+        </form>
+    </div>
+</section>
+
+<section class="card shadow-sm">
+    <div class="card-header bg-light">
+        <strong>Stored Media</strong>
+    </div>
+    <div class="card-body table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Blob Name</th>
+                    <th>Content Type</th>
+                    <th>Size (bytes)</th>
+                    <th>Last Modified</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.MediaFiles.Count == 0)
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No media files uploaded yet.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model.MediaFiles)
+                {
+                    <tr>
+                        <td><a href="@item.Uri" target="_blank" rel="noopener">@item.Blob.Name</a></td>
+                        <td>@item.Blob.Properties.ContentType</td>
+                        <td>@(item.Blob.Properties.ContentLength ?? 0)</td>
+                        <td>@item.Blob.Properties.LastModified?.LocalDateTime.ToString("g")</td>
+                        <td class="text-end">
+                            <form method="post" asp-page-handler="Delete" class="d-inline">
+                                <input type="hidden" name="blobName" value="@item.Blob.Name" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

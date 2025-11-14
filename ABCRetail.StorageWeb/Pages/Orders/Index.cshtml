@@ -1,0 +1,42 @@
+@page
+@model ABCRetail.StorageWeb.Pages.Orders.IndexModel
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h2 class="mb-4">My Orders</h2>
+
+@if (!Model.Orders.Any())
+{
+    <div class="alert alert-info">You have not placed any orders yet.</div>
+}
+else
+{
+    <div class="accordion" id="ordersAccordion">
+        @for (int i = 0; i < Model.Orders.Count; i++)
+        {
+            var order = Model.Orders[i];
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-@order.Id">
+                    <button class="accordion-button @(i == 0 ? string.Empty : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@order.Id">
+                        Order #@order.Id - @order.Status - @order.CreatedAtUtc.ToLocalTime()
+                    </button>
+                </h2>
+                <div id="collapse-@order.Id" class="accordion-collapse collapse @(i == 0 ? "show" : string.Empty)" data-bs-parent="#ordersAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-group mb-3">
+                            @foreach (var item in order.Items)
+                            {
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>@item.ProductName (@item.Quantity)</span>
+                                    <span>R @(item.UnitPrice * item.Quantity)</span>
+                                </li>
+                            }
+                        </ul>
+                        <p class="text-muted">Status last updated: @(order.ProcessedAtUtc?.ToLocalTime().ToString() ?? "Pending")</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

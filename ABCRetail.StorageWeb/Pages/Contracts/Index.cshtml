@@ -1,0 +1,85 @@
+@page
+@model ABCRetail.StorageWeb.Pages.Contracts.IndexModel
+@{
+    ViewData["Title"] = "Contracts Archive";
+    var downloadError = TempData["DownloadError"]?.ToString();
+}
+
+<h1 class="display-6">Contracts Archive</h1>
+<p class="text-muted">Contracts are kept in the <code>contracts</code> Azure File Share for simplified access.</p>
+
+@if (!string.IsNullOrWhiteSpace(downloadError))
+{
+    <div class="alert alert-danger">@downloadError</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <div class="alert alert-success" role="alert">@Model.StatusMessage</div>
+}
+
+<section class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+        <strong>Upload Contract</strong>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-8">
+                    <input asp-for="Upload" type="file" class="form-control" />
+                    <span asp-validation-for="Upload" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-info w-100 text-white">Upload to File Share</button>
+                </div>
+            </div>
+            <div asp-validation-summary="All" class="alert alert-danger mt-3" role="alert"></div>
+            <p class="small text-muted mt-2">Files are uploaded to the <code>contracts</code> directory in share <code>contracts</code>.</p>
+        </form>
+    </div>
+</section>
+
+<section class="card shadow-sm">
+    <div class="card-header bg-light">
+        <strong>Available Contracts</strong>
+    </div>
+    <div class="card-body table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.ContractFiles.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No contracts uploaded yet.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var file in Model.ContractFiles)
+                {
+                    <tr>
+                        <td>@file.Name</td>
+                        <td>@(file.IsDirectory ? "Directory" : "File")</td>
+                        <td class="text-end">
+                            @if (!file.IsDirectory)
+                            {
+                                <a asp-page-handler="Download" asp-route-fileName="@file.Name" class="btn btn-sm btn-outline-primary">Download</a>
+                                <form method="post" asp-page-handler="Delete" class="d-inline">
+                                    <input type="hidden" name="fileName" value="@file.Name" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

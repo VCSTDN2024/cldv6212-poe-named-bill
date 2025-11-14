@@ -1,0 +1,76 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Azure Storage Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h1 class="display-6">Azure Storage Operations Hub</h1>
+                <p class="lead">Track which Azure storage services are used in Part 1 and jump to the relevant management pages.</p>
+                <div class="alert alert-info">
+                    <strong>Environment:</strong> Using storage account <code>st10445399</code> with student number <code>@Model.StorageOptions.PlaceholderStudentNumber</code> and module <code>@Model.StorageOptions.PlaceholderModuleCode</code>.
+                </div>
+                <p>Use the navigation bar or the quick links below to manage data:</p>
+                <ul>
+                    <li><a asp-page="/Customers/Index">Customer Profiles</a> stored in the <code>@Model.StorageOptions.CustomersTableName</code> table.</li>
+                    <li><a asp-page="/Products/Index">Product Catalogue</a> stored in the <code>@Model.StorageOptions.ProductsTableName</code> table.</li>
+                    <li><a asp-page="/Media/Index">Media Library</a> stored in the <code>@Model.StorageOptions.MediaContainerName</code> blob container.</li>
+                    <li><a asp-page="/Operations/Index">Operations Queue</a> using the <code>@Model.StorageOptions.OperationsQueueName</code> queue.</li>
+                    <li><a asp-page="/Contracts/Index">Contracts Archive</a> stored in the <code>@Model.StorageOptions.ContractsFileShareName</code> file share.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">Serverless Integrations</h2>
+                <p class="small">Expose these Azure Functions to automate workflows or connect partner systems:</p>
+                <ul class="small mb-0">
+                    <li><strong>Customers:</strong> POST profiles to <code>/api/customers</code>.</li>
+                    <li><strong>Media:</strong> Upload Base64 assets to <code>/api/media</code>.</li>
+                    <li><strong>Operations:</strong> POST queue messages and GET current queue state at <code>/api/operations</code>.</li>
+                    <li><strong>Contracts:</strong> Persist documents via <code>/api/contracts</code>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6 col-xl-3">
+        <div class="card text-bg-primary h-100">
+            <div class="card-body">
+                <h3 class="h6 text-uppercase">Tables</h3>
+                <p class="mb-0">Customer + Product data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card text-bg-secondary h-100">
+            <div class="card-body">
+                <h3 class="h6 text-uppercase">Blobs</h3>
+                <p class="mb-0">Media uploads + public URLs</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card text-bg-warning h-100">
+            <div class="card-body">
+                <h3 class="h6 text-uppercase">Queues</h3>
+                <p class="mb-0">Order processing events</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card text-bg-info h-100">
+            <div class="card-body">
+                <h3 class="h6 text-uppercase">File Shares</h3>
+                <p class="mb-0">Contracts + documents</p>
+            </div>
+        </div>
+    </div>
+</div>

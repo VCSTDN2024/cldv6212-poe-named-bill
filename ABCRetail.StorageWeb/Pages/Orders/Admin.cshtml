@@ -1,0 +1,66 @@
+@page
+@model ABCRetail.StorageWeb.Pages.Orders.AdminModel
+@{
+    ViewData["Title"] = "Order Administration";
+}
+
+<h2 class="mb-4">Order Administration</h2>
+
+@if (TempData["StatusMessage"] is string message)
+{
+    <div class="alert alert-success">@message</div>
+}
+
+@if (!Model.Orders.Any())
+{
+    <div class="alert alert-info">No orders have been placed yet.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Items</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.User?.Email</td>
+                    <td>@order.Status</td>
+                    <td>@order.CreatedAtUtc.ToLocalTime()</td>
+                    <td>
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var item in order.Items)
+                            {
+                                <li>@item.Quantity × @item.ProductName (R @item.UnitPrice)</li>
+                            }
+                        </ul>
+                    </td>
+                    <td class="text-end">
+                        @if (order.Status == ABCRetail.StorageWeb.Models.Commerce.OrderStatus.Placed)
+                        {
+                            <form method="post" asp-page-handler="Process">
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <button type="submit" class="btn btn-sm btn-success">Mark Processed</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Processed</span>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
